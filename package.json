@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
     "prisma:generate": "prisma generate",
-    "prisma:migrate:sql": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/202602141900_init/migration.sql",
+    "prisma:migrate:sql": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/full_schema.sql",
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
@@ -39,6 +40,7 @@
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.18"
   }
 }

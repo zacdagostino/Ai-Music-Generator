@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { RevealEvent } from "@/components/providers/reveal-event";
+import { PostPurchaseFeedback } from "@/components/reveal/post-purchase-feedback";
 import { CandleToggle } from "@/components/ui/candle-toggle";
 import { Card } from "@/components/ui/card";
 import { SiteShell } from "@/components/ui/site-shell";
@@ -32,12 +33,14 @@ export default async function RevealPage({ params }: { params: Promise<{ orderId
 
   return (
     <SiteShell>
-      <RevealEvent orderId={order.id} />
+      <RevealEvent orderId={order.id} collection={order.eventType} tier={order.tier} />
       <Card className="mx-auto max-w-3xl space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-stone-500">Reveal</p>
-            <h1 className="mt-2 font-serif text-4xl text-stone-800">For {answers?.honoreeName ?? "your loved one"}</h1>
+            <h1 className="mt-2 font-serif text-4xl text-stone-800">
+              For {answers?.honoreeName ?? (order.eventType === "IN_LOVE" ? "your person" : "your loved one")}
+            </h1>
           </div>
           <CandleToggle slug={order.slug} />
         </div>
@@ -63,6 +66,24 @@ export default async function RevealPage({ params }: { params: Promise<{ orderId
             </a>
           </div>
         )}
+
+        {order.physicalRequired && (
+          <div className="rounded-2xl border border-stone-200 bg-white/60 p-4 text-sm text-stone-700">
+            <p className="mb-2 text-xs uppercase tracking-[0.2em] text-stone-500">Keepsake fulfillment</p>
+            <p>Status: {order.shippingStatus}</p>
+            {order.trackingNumber ? <p className="mt-1">Tracking: {order.trackingNumber}</p> : null}
+            <p className="mt-2 text-xs text-stone-500">
+              Production typically takes 2-4 business days after digital reveal, then US shipping in 3-7 business days.
+            </p>
+          </div>
+        )}
+
+        <PostPurchaseFeedback
+          orderId={order.id}
+          defaultConsent={order.testimonialConsent}
+          defaultRating={order.feedbackRating}
+          defaultText={order.feedbackText}
+        />
 
         <div className="flex flex-wrap gap-3 text-sm">
           <Link href={`/memory/${order.slug}?token=${order.shareToken}`} className="underline">

@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -53,19 +53,24 @@ function buildMemoryPrompts(name: string, relationship: string, descriptorOne: s
   ];
 }
 
-const stepVariants = {
+const stepVariants: Variants = {
   hidden: { opacity: 0, y: 12 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { staggerChildren: 0.07, delayChildren: 0.06, duration: 0.5, ease: "easeOut" },
+    transition: { staggerChildren: 0.07, delayChildren: 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
   },
-  exit: { opacity: 0, y: -8, transition: { duration: 0.35, ease: "easeInOut" } },
+  exit: { opacity: 0, y: -8, transition: { duration: 0.35, ease: [0.42, 0, 0.58, 1] } },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 12, filter: "blur(5px)" },
-  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.45, ease: "easeOut" } },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+  },
 };
 
 export function InMemoryRitualForm() {
@@ -183,7 +188,7 @@ export function InMemoryRitualForm() {
     void fetch("/api/analytics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ event: "begin_ritual", payload: { collection: "in-memory" } }),
+      body: JSON.stringify({ event: "begin_ritual", payload: { collection: "IN_MEMORY" } }),
     });
   }, []);
 
@@ -221,7 +226,7 @@ export function InMemoryRitualForm() {
     await fetch("/api/analytics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ event: "complete_ritual", payload: { orderId: order.id } }),
+      body: JSON.stringify({ event: "complete_ritual", payload: { orderId: order.id, collection: "IN_MEMORY" } }),
     });
     router.push(`/checkout?orderId=${order.id}`);
   };

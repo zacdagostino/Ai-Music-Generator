@@ -62,6 +62,18 @@ enum SubscriptionStatus {
   PAST_DUE
 }
 
+enum FulfillmentStatus {
+  NOT_REQUIRED
+  PENDING_DETAILS
+  READY_FOR_PRODUCTION
+  IN_PRODUCTION
+  READY_TO_SHIP
+  SHIPPED
+  DELIVERED
+  ON_HOLD
+  CANCELED
+}
+
 model User {
   id            String         @id @default(cuid())
   name          String?
@@ -92,6 +104,16 @@ model Order {
   shareToken       String              @unique
   promptJson       Json?
   selectedAttemptId String?
+  recipientName    String?
+  shippingAddressJson Json?
+  physicalRequired Boolean             @default(false)
+  shippingStatus   FulfillmentStatus   @default(NOT_REQUIRED)
+  trackingNumber   String?
+  fulfillmentNotes String?
+  fulfilledAt      DateTime?
+  testimonialConsent Boolean           @default(false)
+  feedbackRating   Int?
+  feedbackText     String?
   user             User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
   payment          Payment?
   generationJob    GenerationJob?
@@ -103,6 +125,8 @@ model Order {
 
   @@index([status])
   @@index([email])
+  @@index([eventType, status])
+  @@index([shippingStatus])
 }
 
 model Payment {
@@ -111,12 +135,19 @@ model Payment {
   stripeCheckoutSessionId String?       @unique
   stripePaymentIntentId   String?       @unique
   stripeCustomerId        String?
+  eventType               EventType?
+  tier                    Tier?
+  lastWebhookEventId      String?
+  metadataJson            Json?
   amount                  Int
   currency                String        @default("usd")
   status                  PaymentStatus @default(PENDING)
   order                   Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
   createdAt               DateTime      @default(now())
   updatedAt               DateTime      @updatedAt
+
+  @@index([eventType, tier])
+  @@index([status, createdAt])
 }
 
 model GenerationJob {
@@ -216,4 +247,18 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  event      String
+  orderId    String?
+  collection EventType?
+  tier       Tier?
+  payloadJson Json?
+  createdAt  DateTime @default(now())
+
+  @@index([event, createdAt])
+  @@index([collection, tier])
+  @@index([orderId])
 }

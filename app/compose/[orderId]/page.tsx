@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { ComposingScreen } from "@/components/compose/composing-screen";
 import { SiteShell } from "@/components/ui/site-shell";
@@ -9,6 +9,8 @@ import { SiteShell } from "@/components/ui/site-shell";
 export default function ComposePage() {
   const routeParams = useParams<{ orderId: string }>();
   const router = useRouter();
+  const [failureMessage, setFailureMessage] = useState<string | null>(null);
+  const [fulfillmentCopy, setFulfillmentCopy] = useState<string | null>(null);
 
   useEffect(() => {
     const orderId = routeParams.orderId;
@@ -26,6 +28,14 @@ export default function ComposePage() {
         return;
       }
 
+      setFailureMessage(data.failureMessage ?? null);
+      if (data.physicalRequired) {
+        setFulfillmentCopy(
+          "Digital delivery first, then physical keepsake production in 2-4 business days with US shipping in 3-7 business days.",
+        );
+      }
+
+      if (data.status === "FAILED") return;
       timeout = setTimeout(poll, 5000);
     };
 
@@ -35,7 +45,7 @@ export default function ComposePage() {
 
   return (
     <SiteShell>
-      <ComposingScreen />
+      <ComposingScreen subtitle={failureMessage ?? fulfillmentCopy ?? undefined} />
     </SiteShell>
   );
 }

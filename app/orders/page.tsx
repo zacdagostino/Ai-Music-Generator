@@ -1,17 +1,38 @@
 import Link from "next/link";
+import { getServerSession } from "next-auth";
 
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 import { SiteShell } from "@/components/ui/site-shell";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function OrdersPage() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return (
+      <SiteShell>
+        <Card className="mx-auto max-w-3xl space-y-3">
+          <h1 className="font-serif text-4xl text-stone-800">Orders</h1>
+          <p className="text-sm text-stone-600">Sign in to view your composition history.</p>
+          <Link href="/login" className="text-sm underline">
+            Go to login
+          </Link>
+        </Card>
+      </SiteShell>
+    );
+  }
+
   let orders: Awaited<ReturnType<typeof prisma.order.findMany>> = [];
   let dbUnavailable = false;
 
   try {
-    orders = await prisma.order.findMany({ orderBy: { createdAt: "desc" }, take: 25 });
+    orders = await prisma.order.findMany({
+      where: { email: session.user.email },
+      orderBy: { createdAt: "desc" },
+      take: 25,
+    });
   } catch {
     dbUnavailable = true;
   }
@@ -33,7 +54,12 @@ export default async function OrdersPage() {
               <div key={order.id} className="flex items-center justify-between rounded-2xl border border-stone-200 p-4 text-sm">
                 <div>
                   <p className="font-medium text-stone-800">{order.email}</p>
-                  <p className="text-stone-500">{order.status}</p>
+                  <p className="text-stone-500">
+                    {order.eventType} · {order.status}
+                  </p>
+                  {order.physicalRequired ? (
+                    <p className="text-xs text-stone-500">Fulfillment: {order.shippingStatus}</p>
+                  ) : null}
                 </div>
                 <Link href={`/reveal/${order.id}`} className="text-stone-700 underline">
                   Open

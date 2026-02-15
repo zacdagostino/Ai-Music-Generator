@@ -21,6 +21,9 @@ export default function InMemoryPage() {
             <li>Visual Tribute - $219</li>
             <li>Legacy Collection - $289</li>
           </ul>
+          <p className="mt-5 text-sm text-stone-600">
+            Why this pricing: each tier adds deeper ceremony, better presentation, and long-term keepsake permanence.
+          </p>
           <Link
             href="/begin/in-memory"
             className="mt-8 inline-block rounded-full bg-stone-900 px-6 py-3 text-sm font-semibold !text-white visited:!text-white"

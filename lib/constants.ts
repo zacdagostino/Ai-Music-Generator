@@ -1,8 +1,9 @@
-import { Tier } from "@prisma/client";
-
 export const APP_NAME = "Held in Song";
 
-export const TIERS: Record<Tier, { name: string; price: number; description: string }> = {
+export type TierKey = "SACRED_COMPOSITION" | "VISUAL_TRIBUTE" | "LEGACY_COLLECTION";
+export type CollectionKey = "IN_MEMORY" | "IN_LOVE";
+
+export const TIERS: Record<TierKey, { name: string; price: number; description: string }> = {
   SACRED_COMPOSITION: {
     name: "Sacred Composition",
     price: 16900,
@@ -38,3 +39,23 @@ export const FEELING_TO_MUSIC: Record<string, string> = {
 };
 
 export const COMPOSING_ESTIMATE = "Usually within 10-30 minutes. In high-volume periods, up to 12 hours.";
+
+export const COLLECTIONS: Record<
+  CollectionKey,
+  { title: string; subtitle: string; landingDescription: string; ritualTitle: string }
+> = {
+  IN_MEMORY: {
+    title: "In Memory",
+    subtitle: "A gentle tribute for remembrance and healing.",
+    landingDescription:
+      "A guided path for grief, gratitude, and remembrance. One story. One composition. Held with care.",
+    ritualTitle: "In Memory Interview",
+  },
+  IN_LOVE: {
+    title: "In Love",
+    subtitle: "A personal composition for love stories and milestones.",
+    landingDescription:
+      "A modern romantic ritual for anniversaries, vows, and moments that deserve to be held in song.",
+    ritualTitle: "In Love Interview",
+  },
+};

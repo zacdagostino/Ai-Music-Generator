@@ -18,10 +18,21 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
   if (!order) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
+  const failureMessage =
+    order.status === "FAILED"
+      ? "We hit a delay while composing. We're preparing a gentle retry and can support you directly if needed."
+      : null;
+
   return NextResponse.json({
     status: order.status,
+    collection: order.eventType,
+    tier: order.tier,
     generationStatus: order.generationJob?.status,
     ready: order.status === "READY",
     selectedAttempt: order.attempts[0] ?? null,
+    failureMessage,
+    physicalRequired: order.physicalRequired,
+    shippingStatus: order.shippingStatus,
+    trackingNumber: order.trackingNumber,
   });
 }
